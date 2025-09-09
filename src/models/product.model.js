@@ -3,6 +3,7 @@
 const { model, Schema, Types } = require("mongoose");
 const DOCUMENT_NAME = "Product";
 const COLLECTION_NAME = "Products";
+const slugify = require("slugify")
 
 const productSchema = new Schema(
   {
@@ -16,14 +17,46 @@ const productSchema = new Schema(
       required: true,
       enum: ["electronic", "furniture", "clothing"],
     },
-    product_shop: {type: Schema.Types.ObjectId, ref: "Shops"},
+    product_shop: {type: Schema.Types.ObjectId, ref: "Shop"},
     product_attributes: { type: Schema.Types.Mixed, required: true },
+
+    // more 
+    product_slug: String,
+    product_variants: { type: Array, default: [], required: true },
+    product_ratingAverage: {
+      type: Number, 
+      default: 4.5, 
+      min: [1, 'Rating must be at least 1'], 
+      max: [5, 'Rating must be at most 5'], 
+      set: val => Math.round(val * 10) / 10
+    }, 
+    isDraft: {
+      type: Boolean,
+      default: true,
+      index: true,
+      select: false
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
+      index: true,
+      select: false
+    },
   },
   {
     collection: COLLECTION_NAME,
     timestamps: true,
   }
 );
+
+// Document middleware
+productSchema.pre("save", function (next) {
+  this.product_slug = slugify(this.product_name, { lower: true })
+  next()
+})
+
+// create index for search product
+productSchema.index({ product_name: 'text', product_description: 'text' });
 
 const clothingSchema = new Schema(
   {
