@@ -1,0 +1,23 @@
+@url_dev=http://localhost:3052/v1/api
+
+### Signup
+POST {{url_dev}}/shop/signup
+Content-Type: application/json
+x-api-key: application-123-08080909
+
+{
+  "name": "HCMUT Shop",
+  "email": "hcmutshop@gmail.com",
+  "password": "Password1!"
+}
+
+
+POST {{url_dev}}/shop/login
+Content-Type: application/json
+x-api-key: application-123-08080909
+
+{
+  "name": "HCMUT Shop",
+  "email": "hcmutshop@gmail.com",
+  "password": "Password1!"
+}
