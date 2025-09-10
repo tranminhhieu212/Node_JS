@@ -13,6 +13,8 @@ const {
   publishProduct,
   findAllPublishedsForShop,
   searchProductForUser,
+  searchAllProducts,
+  getProductDetail,
 } = require("../models/repositories/product.repo");
 
 class ProductFactory {
@@ -34,7 +36,11 @@ class ProductFactory {
     return await findAllDraftsForShop({ query, limit, skip });
   }
 
-  static async findAllPublishedsForShop({ product_shop, limit = 60, skip = 0 }) {
+  static async findAllPublishedsForShop({
+    product_shop,
+    limit = 50,
+    skip = 0,
+  }) {
     const query = { product_shop, isDraft: false };
     return await findAllPublishedsForShop({ query, limit, skip });
   }
@@ -45,11 +51,40 @@ class ProductFactory {
   }
 
   static async unPublishProduct({ product_shop, product_id }) {
-    return await publishProduct({ product_shop, product_id, isPublishAction: false });
+    return await publishProduct({
+      product_shop,
+      product_id,
+      isPublishAction: false,
+    });
   }
-  
+
   static async searchProductForUser({ keySearch }) {
     return await searchProductForUser({ keySearch });
+  }
+
+  static async searchAllProducts({
+    filter = {},
+    page = 1,
+    limit = 50,
+    sortBy = "ctime",
+  }) {
+    return await searchAllProducts({
+      filter,
+      page,
+      limit,
+      sortBy,
+      select: [
+        "product_name",
+        "product_description",
+        "product_price",
+        "product_thumd",
+      ],
+    });
+  }
+
+  static async getProductDetail({ product_id }) {
+    const unSelect = ["product_attributes", "product_variants", "__v"];
+    return await getProductDetail({ product_id, unSelect });
   }
 }
 

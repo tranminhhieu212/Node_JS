@@ -15,6 +15,8 @@ const { authorizationV2 } = require('../../auth/authUtils');
  * @return {JSON}
  */
 router.get('/search/:keySearch', asyncHandler(productController.searchProductForUser));
+router.get('/:product_id', asyncHandler(productController.getProductDetail));
+router.get('', asyncHandler(productController.searchAllProducts));
 
 router.use(authorizationV2);
 //CREATE
