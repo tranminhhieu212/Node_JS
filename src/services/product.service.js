@@ -1,6 +1,5 @@
 "use strict";
 
-const { isDate } = require("lodash");
 const { BadRequestErorr } = require("../core/errror.response");
 const {
   productModel,
@@ -15,7 +14,9 @@ const {
   searchProductForUser,
   searchAllProducts,
   getProductDetail,
+  findAndUpdateById,
 } = require("../models/repositories/product.repo");
+const { removeUndefinedValue, removeNestedUndefinedObject } = require("../utils");
 
 class ProductFactory {
   static productRegistry = {};
@@ -29,6 +30,13 @@ class ProductFactory {
     if (!productClass) throw new BadRequestErorr("Invalid product type");
 
     return await new productClass(payload).createProduct();
+  }
+
+  static async updateProduct(type, product_id, payload) {
+    const productClass = ProductFactory.productRegistry[type];
+    if (!productClass) throw new BadRequestErorr("Invalid product type");
+
+    return await new productClass(payload).updateProduct(product_id);
   }
 
   static async findAllDraftsForShop({ product_shop, limit = 60, skip = 0 }) {
@@ -83,7 +91,7 @@ class ProductFactory {
   }
 
   static async getProductDetail({ product_id }) {
-    const unSelect = ["product_attributes", "product_variants", "__v"];
+    const unSelect = ["__v", "product_variants"];
     return await getProductDetail({ product_id, unSelect });
   }
 }
@@ -114,6 +122,10 @@ class Product {
   async createProduct(id) {
     return await productModel.create({ ...this, _id: id });
   }
+
+  async updateProduct(product_id, body_update) {
+    return await findAndUpdateById({product_id, body_update, model: productModel});
+  }
 }
 
 class ClotheProduct extends Product {
@@ -130,6 +142,15 @@ class ClotheProduct extends Product {
       throw new BadRequestErorr("Create product error - ErrorHandler");
     return newProduct;
   }
+  
+    async updateProduct(product_id) {
+      const objectParams = this;
+      if (objectParams.product_attributes) {
+        await findAndUpdateById({product_id, body_update: removeUndefinedValue(objectParams.product_attributes), model: clothingModel});
+      }
+      
+      return await super.updateProduct(product_id, removeNestedUndefinedObject(objectParams));
+    } 
 }
 
 class ElectronicProduct extends Product {

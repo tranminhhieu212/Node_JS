@@ -28,6 +28,7 @@ router.use(authorizationV2);
  * @return {JSON}
  */
 router.post('', asyncHandler(productController.createProduct));
+router.patch('/:product_id', asyncHandler(productController.updateProduct));
 // QUERY
 /**     
  * @description Get all drafts for shop
