@@ -16,7 +16,7 @@ const { authorizationV2 } = require('../../auth/authUtils');
  */
 router.get('/search/:keySearch', asyncHandler(productController.searchProductForUser));
 router.get('/:product_id', asyncHandler(productController.getProductDetail));
-router.get('', asyncHandler(productController.searchAllProducts));
+router.post('', asyncHandler(productController.searchAllProducts));
 
 router.use(authorizationV2);
 //CREATE
@@ -27,7 +27,7 @@ router.use(authorizationV2);
  * @body {Object} 
  * @return {JSON}
  */
-router.post('', asyncHandler(productController.createProduct));
+router.post('/new', asyncHandler(productController.createProduct));
 router.patch('/:product_id', asyncHandler(productController.updateProduct));
 // QUERY
 /**     

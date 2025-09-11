@@ -76,7 +76,7 @@ class ProductController {
   searchAllProducts = async (req, res, next) => {
     new SuccessResponse({
       message: "Search all products successfully",
-      metadata: await productService.searchAllProducts(req.query),
+      metadata: await productService.searchAllProducts({...req.query, filter: req.body}),
     }).send(res);
   };
 

@@ -27,6 +27,7 @@ var apikeySchema = new mongoose.Schema(
   },
   {
     collection: COLLECTION_NAME,
+    timestamps: true,
   }
 );
 
