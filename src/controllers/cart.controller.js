@@ -4,7 +4,6 @@ const { SuccessResponse } = require("../core/success.response");
 
 class CartController {
   addToCart = async (req, res, next) => {
-        console.log(req.body)
     new SuccessResponse({
       metadata: await cartService.addToCart(req.body),
     }).send(res);

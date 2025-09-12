@@ -9,8 +9,10 @@ const router = express.Router();
 // check permissions
 // router.use(checkPermissions('0000'));
 // routes
+router.use('/v1/api/checkout', require('./checkout'));
 router.use('/v1/api/cart', require('./cart'));
 router.use('/v1/api/discount', require('./discount'));
+router.use('/v1/api/inventory', require('./inventory'));
 router.use('/v1/api/products', require('./product'));
 router.use('/v1/api', require('./access'));
 

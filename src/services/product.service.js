@@ -16,6 +16,7 @@ const {
   searchAllProducts,
   getProductDetail,
   findAndUpdateById,
+  findProductById,
 } = require("../models/repositories/product.repo");
 const {
   removeUndefinedValue,
@@ -58,16 +59,23 @@ class ProductFactory {
   }
 
   static async publishProduct({ product_shop, product_id }) {
-    console.log(product_shop, product_id);
+    const foundProduct = await findProductById(product_id);
+    if (!foundProduct) throw new BadRequestErorr("Product not found");
+    if (foundProduct.product_shop.toString() !== product_shop)
+      throw new BadRequestErorr("Not have permission");
     return await publishProduct({ product_shop, product_id });
   }
 
   static async unPublishProduct({ product_shop, product_id }) {
+    const foundProduct = await findProductById(product_id);
+    if (!foundProduct) throw new BadRequestErorr("Product not found");
+    if (foundProduct.product_shop.toString() !== product_shop)
+      throw new BadRequestErorr("Not have permission");
     return await publishProduct({
       product_shop,
       product_id,
       isPublishAction: false,
-    });
+    })
   }
 
   static async searchProductForUser({ keySearch }) {
@@ -92,7 +100,7 @@ class ProductFactory {
         "product_thumd",
         "product_type",
         "product_shop",
-        "product_slug", 
+        "product_slug",
         "product_ratingAverage",
         "product_attributes",
       ],
@@ -130,13 +138,13 @@ class Product {
 
   async createProduct(id) {
     const newProduct = await productModel.create({ ...this, _id: id });
-    if(newProduct) {
+    if (newProduct) {
       await insertInventory({
         productId: newProduct._id,
         stock: this.product_quantity,
-        shopId: this.product_shop
-      })
-    } 
+        shopId: this.product_shop,
+      });
+    }
     return newProduct;
   }
 

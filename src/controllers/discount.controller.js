@@ -27,7 +27,7 @@ class DiscountController {
   getAllDiscountForShop = async  (req, res, next) => {
     new SuccessResponse({
       metadata: await discountService.getAllDiscountForShop({
-        shopId: req.body.shopId,
+        shopId: req.params.shopId,
         limit: req.query.limit,
         page: req.query.page,
       }),
@@ -44,7 +44,6 @@ class DiscountController {
   }
 
   getDiscountAmount = async (req, res, next) => {
-    console.log(req.body, req.user);
     new SuccessResponse({
       metadata: await discountService.getDiscountAmount({
         ...req.body,
@@ -56,7 +55,7 @@ class DiscountController {
   cancelDiscountCode = async (req, res, next) => {
     new SuccessResponse({
       metadata: await discountService.cancelDiscountCode({
-        codeId: req.body.codeId,
+        code: req.body.code,
         shopId: req.body.shopId,
         userId: req.user.userId
       }),

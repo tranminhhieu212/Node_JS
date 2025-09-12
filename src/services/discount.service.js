@@ -50,7 +50,7 @@ class DiscountService {
     const foundDiscount = await discountModel
       .findOne({
         discount_code: code,
-        discount_shopId: convertToObjectId(shopId),
+        discount_shop: convertToObjectId(shopId),
       })
       .lean();
 
@@ -99,7 +99,17 @@ class DiscountService {
     const { discount_applies_to, discount_products } = foundDiscount;
 
     let products = null;
-    let select = ["product_name", "product_description", "product_price", "product_thumd", "product_type", "product_shop", "product_slug", "product_ratingAverage", "product_attributes"];
+    let select = [
+      "product_name",
+      "product_description",
+      "product_price",
+      "product_thumd",
+      "product_type",
+      "product_shop",
+      "product_slug",
+      "product_ratingAverage",
+      "product_attributes",
+    ];
     if (discount_applies_to === "all") {
       // get all product
       products = await searchAllProducts({
@@ -153,15 +163,11 @@ class DiscountService {
     return discount;
   }
 
-  static async getDiscountAmount({ products, codeId, shopId, userId }) {
-    console.log({
-      discount_code: codeId,
-      discount_shop: convertToObjectId(shopId),
-    });
+  static async getDiscountAmount({ products, code, shopId, userId }) {
     const foundDiscount = await checkDiscountExist({
       model: discountModel,
       filter: {
-        discount_code: codeId,
+        discount_code: code,
         discount_shop: convertToObjectId(shopId),
       },
     });
@@ -178,6 +184,7 @@ class DiscountService {
       discount_startDate,
       discount_endDate,
       discount_min_order_value,
+      discount_products,
     } = foundDiscount;
 
     if (!discount_is_active)
@@ -190,13 +197,21 @@ class DiscountService {
     if (new Date() > new Date(discount_endDate))
       throw new BadRequestErorr("Discount code is expired");
 
-    let totalOrder = 0;
+    let totalOrder = 0,
+      totalAllowedDiscount = 0;
+    let allowedProduct = products.filter((product) =>
+      discount_products.includes(product.productId)
+    );
+
     if (discount_min_order_value > 0) {
       totalOrder = products.reduce((acc, product) => {
         return acc + product.product_price * product.product_quantity;
       }, 0);
+      totalAllowedDiscount = allowedProduct.reduce((acc, product) => {
+        return acc + product.product_price * product.product_quantity;
+      }, 0);
 
-      if (totalOrder < discount_min_order_value)
+      if (totalAllowedDiscount < discount_min_order_value)
         throw new BadRequestErorr("Total order is less than min order value");
     }
 
@@ -213,7 +228,7 @@ class DiscountService {
     discountAmount =
       discount_type === "fixed"
         ? discount_value
-        : (totalOrder * discount_value) / 100;
+        : (totalAllowedDiscount * discount_value) / 100;
 
     return {
       discount: `${foundDiscount.discount_value}${
@@ -225,11 +240,11 @@ class DiscountService {
     };
   }
 
-  static async cancelDiscountCode({ shopId, codeId, userId }) {
+  static async cancelDiscountCode({ shopId, code, userId }) {
     const foundDiscount = await checkDiscountExist({
       model: discountModel,
       filter: {
-        discount_code: codeId,
+        discount_code: code,
         discount_shop: convertToObjectId(shopId),
       },
     });

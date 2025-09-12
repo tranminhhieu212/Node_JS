@@ -2,7 +2,11 @@
 
 const { Types } = require("mongoose");
 const { productModel } = require("../product.model");
-const { getSelectData, getUnSelectData, convertToObjectId } = require("../../utils");
+const {
+  getSelectData,
+  getUnSelectData,
+  convertToObjectId,
+} = require("../../utils");
 
 const queryProduct = async ({ query, limit = 60, skip = 0 }) => {
   return await productModel
@@ -63,7 +67,12 @@ const findAllPublishedsForShop = async ({ query, limit = 60, skip = 0 }) => {
   return await queryProduct({ query, limit, skip });
 };
 
-const findAndUpdateById = async ({product_id , body_update, model, isNew = true}) => {
+const findAndUpdateById = async ({
+  product_id,
+  body_update,
+  model,
+  isNew = true,
+}) => {
   return await model.findByIdAndUpdate(product_id, body_update, { new: isNew });
 };
 
@@ -84,7 +93,22 @@ const publishProduct = async ({
 };
 
 const findProductById = async (product_id) => {
-  return await productModel.findOne({_id: convertToObjectId(product_id)}).lean();
+  return await productModel
+    .findOne({ _id: convertToObjectId(product_id) })
+    .lean();
+};
+
+const checkProductsServer = async (products) => {
+  return await Promise.all(
+    products.map(async (product) => {
+      const foundProduct = await findProductById(product.productId);
+      return {
+        product_price: foundProduct.product_price,
+        product_quantity: foundProduct.product_quantity >= product.quantity ? product.quantity : 0,
+        productId: product.productId,
+      };
+    })
+  );
 };
 
 module.exports = {
@@ -95,5 +119,6 @@ module.exports = {
   searchAllProducts,
   getProductDetail,
   findAndUpdateById,
-  findProductById
+  findProductById,
+  checkProductsServer
 };
