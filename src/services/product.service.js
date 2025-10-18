@@ -22,6 +22,7 @@ const {
   removeUndefinedValue,
   removeNestedUndefinedObject,
 } = require("../utils");
+const { pushNotiToSystem } = require("./notification.service");
 
 class ProductFactory {
   static productRegistry = {};
@@ -145,6 +146,16 @@ class Product {
         shopId: this.product_shop,
       });
     }
+    // push noti to system 
+    pushNotiToSystem({
+      type: "SHOP-001",
+      senderId: this.product_shop,
+      receiverId: 1,
+      option: {
+        product_name: this.product_name, 
+        shop_name: this.product_shop
+      },
+    });
     return newProduct;
   }
 

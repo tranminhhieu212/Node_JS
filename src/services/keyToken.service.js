@@ -4,7 +4,7 @@ const { Type } = require("avsc");
 const keytokenModel = require("../models/keytoken.model");
 const { Types } = require("mongoose");
 
-class KeyTokenService {
+class   KeyTokenService {
   static createKeyToken = async ({
     userId,
     email,

@@ -7,7 +7,9 @@ const dev = {
     db: {
         host: process.env.DEV_DB_HOST || 'localhost',
         port: process.env.DEV_DB_PORT || 27017,
-        name: process.env.DEV_DB_NAME || 'ecommerce'
+        name: process.env.DEV_DB_NAME || 'ecommerce',
+        username: process.env.DEV_DB_USERNAME || 'mongoadmin',
+        password: process.env.DEV_DB_PASSWORD || 'Password1!'
     }
 }
 
@@ -18,7 +20,9 @@ const prod = {
     db: {
         host: process.env.PROD_DB_HOST || 'localhost',
         port: process.env.PROD_DB_PORT || 27017,
-        name: process.env.PROD_DB_NAME || 'prod_ecommerce'
+        name: process.env.PROD_DB_NAME || 'prod_ecommerce',
+        username: process.env.PROD_DB_USERNAME || 'mongoadmin',
+        password: process.env.PORD_DB_PASSWORD || 'Password1!'
     }
 }
 
