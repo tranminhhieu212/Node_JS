@@ -9,7 +9,7 @@ claudinary.config({
     api_secret: API_SECRET
 });
 
-console.log(claudinary.config());
+console.log("Connect to Cloudinary")
 
 module.exports = {
     claudinary

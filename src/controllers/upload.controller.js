@@ -19,7 +19,7 @@ class UploadController {
     new SuccessResponse({
       metadata: await uploadSevice.uploadImageFromLocal({
         path: file.path,
-        folderName: 'product/shopId',
+        folderName: "product/shopId",
       }),
     }).send(res);
   };
@@ -32,11 +32,20 @@ class UploadController {
     new SuccessResponse({
       metadata: await uploadSevice.uploadMultipleImage({
         files,
-        folderName: 'product/multiple',
+        folderName: "product/multiple",
       }),
     }).send(res);
-  }
-  ;
+  };
+
+  uploadMultipleImageFromLocalWithS3 = async (req, res, next) => {
+    const { file } = req;
+    if (!file) {
+      throw new BadRequestErorr("File not found");
+    }
+    new SuccessResponse({
+      metadata: await uploadSevice.uploadImageFromURLWithS3(file),
+    }).send(res);   
+  };
 }
 
 module.exports = new UploadController();
