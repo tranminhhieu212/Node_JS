@@ -9,6 +9,7 @@ const router = express.Router();
 // check permissions
 // router.use(checkPermissions('0000'));
 // routes
+router.use('/v1/api/upload', require('./upload'));
 router.use('/v1/api/notification', require('./notification'));
 router.use('/v1/api/comment', require('./comment'));
 router.use('/v1/api/checkout', require('./checkout'));

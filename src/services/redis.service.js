@@ -3,7 +3,7 @@ const redis = require("redis");
 const {
   reservationInventory,
 } = require("../models/repositories/inventory.repo");
-const { host, port, password } = require("../configs/config.redis");
+const { host, port, password } = require("../configs/redis.config");
 
 // Tạo client Redis cho Docker / port 6380 / password
 const redisClient = redis.createClient({
